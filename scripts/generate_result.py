@@ -51,6 +51,8 @@ h1,h2,.hero-name{{font-family:'M PLUS Rounded 1c',sans-serif}}
 .animal-desc{{font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:10px}}
 .detail-row{{display:flex;gap:8px;font-size:12px;color:var(--ink2);line-height:1.6;margin-top:6px}}
 .detail-row .lbl{{flex-shrink:0;background:var(--acl);color:var(--ink);padding:2px 8px;border-radius:6px;font-weight:800;font-size:10px;margin-top:2px}}
+.tag-row{{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}}
+.tag-chip{{background:var(--paperd);color:var(--ink2);font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px}}
 .note-box{{margin:20px 20px 0;background:#fff8e9;border:1.5px dashed var(--ac2);border-radius:12px;padding:16px;font-size:13px;color:var(--ink2);line-height:1.75}}
 .note-box .nt{{font-size:11px;font-weight:800;color:var(--ac);margin-bottom:8px;letter-spacing:1px}}
 .footer{{text-align:center;font-size:11px;color:var(--ink3);padding:26px 20px 0;line-height:1.8}}
@@ -87,6 +89,13 @@ CARD_TEMPLATE = """<div class="card">
         </div>
       </div>
       <div class="animal-catch">{catch}</div>
+      <div class="tag-row">
+        <div class="tag-chip">{group}</div>
+        <div class="tag-chip">{brain}</div>
+        <div class="tag-chip">{outlook}</div>
+        <div class="tag-chip">{orientation}</div>
+        <div class="tag-chip">人間の一生：{life_stage}</div>
+      </div>
       <div class="animal-desc">{desc}</div>
       <div class="detail-row"><div class="lbl">長所</div><div>{good}</div></div>
       <div class="detail-row"><div class="lbl">短所</div><div>{bad}</div></div>
@@ -104,6 +113,8 @@ def build(honshitsu, hyoumen, ishikettei, kakure, kibou, name):
         cards.append(CARD_TEMPLATE.format(
             slot_label=label, slot_note=note, emoji=data["emoji"],
             animal=animal, type=data["type"], catch=data["catch"],
+            group=data["group"], brain=data["brain"], outlook=data["outlook"],
+            orientation=data["orientation"], life_stage=data["life_stage"],
             desc=data["desc"], good=data["good"], bad=data["bad"], motiv=data["motiv"],
         ))
 
@@ -118,9 +129,10 @@ def build(honshitsu, hyoumen, ishikettei, kakure, kibou, name):
             '<div class="note-box"><div class="nt">本質と希望のバランス</div>'
             f'本質は「{honshitsu}」なのに、希望（憧れ）は「{kibou}」。'
             'この2つにギャップがあると「動きたいのに動けない」という葛藤を抱えやすい、'
-            'というのが中村悠平氏の解釈です。無理に{kibou}を演じようとするより、'
-            f'本質である{honshitsu}の強みを活かす方が楽に力を発揮できます。</div>'
-        ).format(kibou=kibou, honshitsu=honshitsu)
+            'というのが中村悠平氏の解釈です。無理に'
+            f'{kibou}を演じようとするより、本質である{honshitsu}の強みを活かす方が'
+            '楽に力を発揮できます。</div>'
+        )
 
     return TEMPLATE.format(
         name=name, honshitsu=honshitsu, cards="\n    ".join(cards),
