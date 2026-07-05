@@ -3,10 +3,311 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>5アニマル診断結果 共有ページ</title>
+<title>5アニマル診断結果メーカー</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#3b2f09;--ink2:#6b5a2a;--ink3:#a4915c;
+  --paper:#fffbef;--paperd:#f7ecc9;--line:#e8d9a4;
+  --card:#ffffff;
+  --ac:#ff7a18;--ac2:#f4b400;--acl:#ffe9a8;
+  --sh:rgba(59,47,9,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+.app{max-width:520px;margin:0 auto;padding:0 0 60px}
+h1,h2{font-family:'M PLUS Rounded 1c',sans-serif}
+.hdr{background:linear-gradient(135deg,var(--ac2) 0%,var(--ac) 100%);padding:36px 26px 26px;text-align:center}
+.hdr .badge{display:inline-block;background:var(--ink);color:var(--acl);font-size:11px;font-weight:700;letter-spacing:2px;padding:5px 16px;border-radius:6px;margin-bottom:14px}
+.hdr h1{font-size:20px;font-weight:800;color:var(--ink);line-height:1.6}
+.hdr p{font-size:12px;color:#5a4413;margin-top:8px;font-weight:600;line-height:1.6}
+
+.upload-box{margin:22px 20px 0;background:var(--card);border:2px dashed var(--ac2);border-radius:14px;padding:26px 20px;text-align:center}
+.upload-box input[type=file]{display:none}
+.upload-btn{display:inline-block;background:var(--ink);color:var(--acl);font-weight:800;font-size:13px;padding:12px 22px;border-radius:99px;cursor:pointer}
+.upload-hint{font-size:11px;color:var(--ink3);margin-top:10px;line-height:1.6}
+.name-input{margin:16px 20px 0}
+.name-input input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:13px;font-family:inherit;background:var(--card);color:var(--ink)}
+.name-input label{font-size:11px;font-weight:800;color:var(--ink3);margin-bottom:6px;display:block;letter-spacing:1px}
+
+.confirm-section{margin:20px 20px 0;display:none}
+.confirm-section.show{display:block}
+.confirm-title{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:4px}
+.confirm-sub{font-size:11px;color:var(--ink3);margin-bottom:14px;line-height:1.6}
+.confirm-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--paperd);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.confirm-thumb{width:52px;height:52px;border-radius:8px;flex-shrink:0;background:var(--paperd)}
+.confirm-info{flex:1;min-width:0}
+.confirm-label{font-size:10px;font-weight:800;color:var(--ac);letter-spacing:1px;margin-bottom:4px}
+.confirm-select{width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit;background:var(--paper);color:var(--ink);font-weight:700}
+.generate-btn{width:100%;margin-top:6px;padding:15px;border:none;border-radius:99px;background:var(--ink);color:var(--acl);font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 4px 0 rgba(59,47,9,.3)}
+.generate-btn:hover{transform:translateY(-1px)}
+
+.cards{padding:24px 20px 0;display:flex;flex-direction:column;gap:16px}
+.result-title{text-align:center;padding:0 20px}
+.card{background:var(--card);border:1.5px solid var(--paperd);border-radius:14px;padding:20px;box-shadow:0 3px 0 var(--paperd),0 6px 16px var(--sh)}
+.slot-label{font-size:11px;font-weight:800;letter-spacing:2px;color:var(--ac);margin-bottom:8px}
+.slot-note{font-size:11px;color:var(--ink3);margin-bottom:12px}
+.animal-row{display:flex;gap:14px;align-items:flex-start}
+.animal-emoji{font-size:36px;flex-shrink:0}
+.animal-name{font-size:18px;font-weight:800;color:var(--ink)}
+.animal-type{font-size:12px;color:var(--ac);font-weight:700;margin-bottom:6px}
+.animal-catch{font-size:13px;font-weight:700;color:var(--ink2);margin:10px 0}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.tag-chip{background:var(--paperd);color:var(--ink2);font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px}
+.animal-desc{font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:10px}
+.detail-row{display:flex;gap:8px;font-size:12px;color:var(--ink2);line-height:1.6;margin-top:6px}
+.detail-row .lbl{flex-shrink:0;background:var(--acl);color:var(--ink);padding:2px 8px;border-radius:6px;font-weight:800;font-size:10px;margin-top:2px}
+.note-box{margin:20px 20px 0;background:#fff8e9;border:1.5px dashed var(--ac2);border-radius:12px;padding:16px;font-size:13px;color:var(--ink2);line-height:1.75}
+.note-box .nt{font-size:11px;font-weight:800;color:var(--ac);margin-bottom:8px;letter-spacing:1px}
+.share-box{margin:20px 20px 0;text-align:center}
+.share-btn{width:100%;padding:14px;border:1.5px solid var(--ac2);border-radius:99px;background:var(--card);color:var(--ink);font-weight:800;font-size:13px;cursor:pointer}
+.share-msg{font-size:11px;color:var(--ac);margin-top:8px;font-weight:700}
+.retry-link{display:block;text-align:center;margin-top:16px;font-size:12px;color:var(--ink3);text-decoration:underline;cursor:pointer}
+.footer{text-align:center;font-size:11px;color:var(--ink3);padding:26px 20px 0;line-height:1.8}
+</style>
 </head>
-<body style="font-family:sans-serif;max-width:480px;margin:60px auto;text-align:center;color:#3b2f09;">
-<h1>5アニマル診断結果</h1>
-<p>個別の診断結果は results/ 配下の共有リンクからご覧いただけます。</p>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="badge">5アニマル診断結果メーカー</div>
+    <h1 id="hdrTitle">動物占い公式サイトの<br>5アニマル結果画像をアップロード</h1>
+    <p id="hdrSub">本質・表面・意思決定・隠れ・希望の5つの動物から<br>あなたの性格を診断します</p>
+  </div>
+
+  <div class="upload-box" id="uploadBox">
+    <label class="upload-btn" for="fileInput">画像をアップロード</label>
+    <input type="file" id="fileInput" accept="image/*"/>
+    <div class="upload-hint">動物占い公式サイトの5アニマル結果のスクリーンショットを選んでください<br>画像はブラウザ内だけで処理され、サーバーには送信されません</div>
+  </div>
+
+  <div class="name-input" id="nameInputBox" style="display:none">
+    <label>お名前（任意）</label>
+    <input type="text" id="nameInput" placeholder="例：山田花子"/>
+  </div>
+
+  <canvas id="workCanvas" style="display:none"></canvas>
+
+  <div class="confirm-section" id="confirmSection">
+    <div class="confirm-title">読み取った動物を確認してください</div>
+    <div class="confirm-sub">自動判定は完璧ではありません。写真と違う場合はプルダウンで修正してください。</div>
+    <div id="confirmRows"></div>
+    <button class="generate-btn" id="generateBtn">この内容で結果を見る</button>
+  </div>
+
+  <div class="result-title" id="resultTitle" style="display:none"></div>
+  <div class="cards" id="cards"></div>
+  <div id="conflictNote"></div>
+  <div class="share-box" id="shareBox" style="display:none">
+    <button class="share-btn" id="shareBtn">この結果の共有リンクをコピー</button>
+    <div class="share-msg" id="shareMsg"></div>
+  </div>
+  <div class="retry-link" id="retryLink" style="display:none">別の画像でやり直す</div>
+
+  <div class="footer">
+    個性心理学（動物占い）※中村悠平氏の解釈に基づく内容です
+  </div>
+</div>
+
+<script src="assets/animals.js"></script>
+<script>
+const state = { guesses: {}, thumbs: {} };
+
+function colorDist(a, b) {
+  return Math.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2);
+}
+
+function nearestAnimal(rgb) {
+  let best = null, bestD = Infinity;
+  for (const name in ANIMALS) {
+    const d = colorDist(rgb, ANIMALS[name].color);
+    if (d < bestD) { bestD = d; best = name; }
+  }
+  return best;
+}
+
+// 指定した境界線色に近いピクセルの外接矩形を、region（相対位置0〜1）の範囲内だけで探す
+function findBox(imgData, w, h, targetColor, tol, region) {
+  const xStart = Math.floor(w * region.x0), xEnd = Math.ceil(w * region.x1);
+  const yStart = Math.floor(h * region.y0), yEnd = Math.ceil(h * region.y1);
+  let minX = w, minY = h, maxX = -1, maxY = -1;
+  const data = imgData.data;
+  for (let y = yStart; y < yEnd; y += 2) {
+    for (let x = xStart; x < xEnd; x += 2) {
+      const i = (y * w + x) * 4;
+      const r = data[i], g = data[i+1], b = data[i+2];
+      if (colorDist([r,g,b], targetColor) < tol) {
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (maxX < 0) return null;
+  return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+}
+
+// 枠内の非背景・非枠線ピクセルの平均色を計算
+function averageInnerColor(imgData, w, h, box, borderColor) {
+  const data = imgData.data;
+  const inset = { x: box.x + box.w * 0.12, y: box.y + box.h * 0.12, w: box.w * 0.76, h: box.h * 0.76 };
+  let sr=0, sg=0, sb=0, n=0;
+  const x0 = Math.max(0, Math.floor(inset.x)), y0 = Math.max(0, Math.floor(inset.y));
+  const x1 = Math.min(w, Math.floor(inset.x + inset.w)), y1 = Math.min(h, Math.floor(inset.y + inset.h));
+  for (let y = y0; y < y1; y += 2) {
+    for (let x = x0; x < x1; x += 2) {
+      const i = (y * w + x) * 4;
+      const r = data[i], g = data[i+1], b = data[i+2];
+      // 白背景に近い、または枠線色に近いピクセルは除外
+      if (colorDist([r,g,b], [255,255,255]) < 20) continue;
+      if (colorDist([r,g,b], borderColor) < 30) continue;
+      sr += r; sg += g; sb += b; n++;
+    }
+  }
+  if (n === 0) return { color: [255,255,255], box: inset };
+  return { color: [sr/n, sg/n, sb/n], box: inset };
+}
+
+function handleFile(file) {
+  const img = new Image();
+  const reader = new FileReader();
+  reader.onload = e => { img.src = e.target.result; };
+  reader.readAsDataURL(file);
+  img.onload = () => {
+    const canvas = document.getElementById('workCanvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    const rows = document.getElementById('confirmRows');
+    rows.innerHTML = '';
+    state.guesses = {};
+    state.thumbs = {};
+
+    SLOTS.forEach(slot => {
+      const box = findBox(imgData, canvas.width, canvas.height, slot.borderColor, 45, slot.region);
+      let guess = 'こじか';
+      let thumbDataUrl = '';
+      if (box && box.w > 10 && box.h > 10) {
+        const res = averageInnerColor(imgData, canvas.width, canvas.height, box, slot.borderColor);
+        guess = nearestAnimal(res.color);
+        // サムネイル切り出し
+        const tc = document.createElement('canvas');
+        tc.width = 60; tc.height = 60;
+        const tctx = tc.getContext('2d');
+        tctx.drawImage(canvas, res.box.x, res.box.y, res.box.w, res.box.h, 0, 0, 60, 60);
+        thumbDataUrl = tc.toDataURL();
+      }
+      state.guesses[slot.key] = guess;
+      state.thumbs[slot.key] = thumbDataUrl;
+
+      const row = document.createElement('div');
+      row.className = 'confirm-row';
+      row.innerHTML = `
+        <img class="confirm-thumb" src="${thumbDataUrl}" style="object-fit:cover;${thumbDataUrl ? '' : 'display:none'}"/>
+        <div class="confirm-info">
+          <div class="confirm-label">${slot.label}</div>
+          <select class="confirm-select" data-key="${slot.key}">
+            ${Object.keys(ANIMALS).map(name => `<option value="${name}" ${name === guess ? 'selected' : ''}>${ANIMALS[name].emoji} ${name}</option>`).join('')}
+          </select>
+        </div>`;
+      rows.appendChild(row);
+    });
+
+    document.getElementById('confirmSection').classList.add('show');
+    document.getElementById('nameInputBox').style.display = 'block';
+    document.getElementById('uploadBox').style.display = 'none';
+  };
+}
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  if (e.target.files && e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+function buildCardHtml(slot, animalName) {
+  const a = ANIMALS[animalName];
+  return `<div class="card">
+    <div class="slot-label">${slot.label}</div>
+    <div class="slot-note">${slot.note}</div>
+    <div class="animal-row">
+      <div class="animal-emoji">${a.emoji}</div>
+      <div>
+        <div class="animal-name">${animalName}</div>
+        <div class="animal-type">${a.type}</div>
+      </div>
+    </div>
+    <div class="animal-catch">${a.catch}</div>
+    <div class="tag-row">
+      <div class="tag-chip">${a.group}</div>
+      <div class="tag-chip">${a.brain}</div>
+      <div class="tag-chip">${a.outlook}</div>
+      <div class="tag-chip">${a.orientation}</div>
+      <div class="tag-chip">人間の一生：${a.lifeStage}</div>
+    </div>
+    <div class="animal-desc">${a.desc}</div>
+    <div class="detail-row"><div class="lbl">長所</div><div>${a.good}</div></div>
+    <div class="detail-row"><div class="lbl">短所</div><div>${a.bad}</div></div>
+    <div class="detail-row"><div class="lbl">攻略法</div><div>${a.motiv}</div></div>
+  </div>`;
+}
+
+function renderResult(values, name) {
+  document.getElementById('uploadBox').style.display = 'none';
+  document.getElementById('nameInputBox').style.display = 'none';
+  document.getElementById('confirmSection').classList.remove('show');
+  document.getElementById('hdrTitle').innerHTML = `${name}さんは<br>「${values.honshitsu}」タイプ`;
+  document.getElementById('hdrSub').innerHTML = '本質・表面・意思決定・隠れ・希望の5つの動物から見えるあなたの姿';
+
+  const cardsEl = document.getElementById('cards');
+  cardsEl.innerHTML = SLOTS.map(slot => buildCardHtml(slot, values[slot.key])).join('');
+
+  const noteEl = document.getElementById('conflictNote');
+  if (values.honshitsu === values.kibou) {
+    noteEl.innerHTML = `<div class="note-box"><div class="nt">本質と希望のバランス</div>本質も希望も同じ「${values.honshitsu}」。自分のスタイルに迷いがなく、無理に別のキャラを演じる必要がない、素直に生きやすいタイプです。</div>`;
+  } else {
+    noteEl.innerHTML = `<div class="note-box"><div class="nt">本質と希望のバランス</div>本質は「${values.honshitsu}」なのに、希望（憧れ）は「${values.kibou}」。この2つにギャップがあると「動きたいのに動けない」という葛藤を抱えやすい、というのが中村悠平氏の解釈です。無理に${values.kibou}を演じようとするより、本質である${values.honshitsu}の強みを活かす方が楽に力を発揮できます。</div>`;
+  }
+
+  const shareUrl = new URL(window.location.href);
+  shareUrl.search = '';
+  const params = new URLSearchParams();
+  SLOTS.forEach(slot => params.set(slot.key, values[slot.key]));
+  params.set('name', name);
+  shareUrl.search = params.toString();
+  window.history.pushState({}, '', shareUrl);
+
+  document.getElementById('shareBox').style.display = 'block';
+  document.getElementById('shareBtn').onclick = () => {
+    navigator.clipboard.writeText(shareUrl.toString()).then(() => {
+      document.getElementById('shareMsg').textContent = 'リンクをコピーしました！';
+    }).catch(() => {
+      document.getElementById('shareMsg').textContent = shareUrl.toString();
+    });
+  };
+  document.getElementById('retryLink').style.display = 'block';
+  document.getElementById('retryLink').onclick = () => window.location.href = window.location.pathname;
+}
+
+document.getElementById('generateBtn').addEventListener('click', () => {
+  const values = {};
+  document.querySelectorAll('.confirm-select').forEach(sel => { values[sel.dataset.key] = sel.value; });
+  const name = document.getElementById('nameInput').value.trim() || 'あなた';
+  renderResult(values, name);
+});
+
+// URLパラメータがあれば直接結果を表示（共有リンクを開いた場合）
+(function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const keys = SLOTS.map(s => s.key);
+  if (keys.every(k => params.has(k))) {
+    const values = {};
+    keys.forEach(k => values[k] = params.get(k));
+    const name = params.get('name') || 'あなた';
+    renderResult(values, name);
+  }
+})();
+</script>
 </body>
 </html>
